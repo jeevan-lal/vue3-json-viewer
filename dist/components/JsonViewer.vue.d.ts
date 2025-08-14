@@ -15,6 +15,15 @@ export interface Props {
     showLineNumbers?: boolean;
     maxDepth?: number;
     hideActionText?: boolean;
+    hideHeader?: boolean;
+    hideFooter?: boolean;
+    hideModeSwitcher?: boolean;
+    hideTreeControls?: boolean;
+    hideEditControls?: boolean;
+    hideSearchButton?: boolean;
+    hideCopyButton?: boolean;
+    hideDownloadButton?: boolean;
+    hideThemeButton?: boolean;
 }
 declare const _default: import("vue").DefineComponent<import("vue").ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<Props>, {
     editable: boolean;
@@ -23,10 +32,24 @@ declare const _default: import("vue").DefineComponent<import("vue").ExtractPropT
     showLineNumbers: boolean;
     maxDepth: number;
     hideActionText: boolean;
+    hideHeader: boolean;
+    hideFooter: boolean;
+    hideModeSwitcher: boolean;
+    hideTreeControls: boolean;
+    hideEditControls: boolean;
+    hideSearchButton: boolean;
+    hideCopyButton: boolean;
+    hideDownloadButton: boolean;
+    hideThemeButton: boolean;
 }>>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     "node-click": (node: JsonNodeType) => void;
     "node-expand": (node: JsonNodeType) => void;
     "node-collapse": (node: JsonNodeType) => void;
+    "key-change": (event: {
+        node: JsonNodeType;
+        oldKey: string;
+        newKey: string;
+    }) => void;
     "update:data": (newData: any) => void;
     "edit-start": () => void;
     "edit-save": (data: any) => void;
@@ -39,10 +62,24 @@ declare const _default: import("vue").DefineComponent<import("vue").ExtractPropT
     showLineNumbers: boolean;
     maxDepth: number;
     hideActionText: boolean;
+    hideHeader: boolean;
+    hideFooter: boolean;
+    hideModeSwitcher: boolean;
+    hideTreeControls: boolean;
+    hideEditControls: boolean;
+    hideSearchButton: boolean;
+    hideCopyButton: boolean;
+    hideDownloadButton: boolean;
+    hideThemeButton: boolean;
 }>>> & Readonly<{
     "onNode-click"?: ((node: JsonNodeType) => any) | undefined;
     "onNode-expand"?: ((node: JsonNodeType) => any) | undefined;
     "onNode-collapse"?: ((node: JsonNodeType) => any) | undefined;
+    "onKey-change"?: ((event: {
+        node: JsonNodeType;
+        oldKey: string;
+        newKey: string;
+    }) => any) | undefined;
     "onUpdate:data"?: ((newData: any) => any) | undefined;
     "onEdit-start"?: (() => any) | undefined;
     "onEdit-save"?: ((data: any) => any) | undefined;
@@ -55,6 +92,15 @@ declare const _default: import("vue").DefineComponent<import("vue").ExtractPropT
     showLineNumbers: boolean;
     maxDepth: number;
     hideActionText: boolean;
+    hideHeader: boolean;
+    hideFooter: boolean;
+    hideModeSwitcher: boolean;
+    hideTreeControls: boolean;
+    hideEditControls: boolean;
+    hideSearchButton: boolean;
+    hideCopyButton: boolean;
+    hideDownloadButton: boolean;
+    hideThemeButton: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

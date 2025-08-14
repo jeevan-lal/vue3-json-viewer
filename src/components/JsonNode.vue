@@ -65,7 +65,7 @@
 
     <!-- Children -->
     <div v-if="isExpandable && node.expanded && node.children" class="children">
-      <JsonNode v-for="(child, index) in filteredChildren" :key="`${child.path.join('.')}-${index}`" :node="child" :editable="editable" :search-query="searchQuery" @node-click="$emit('node-click', $event)" @node-expand="$emit('node-expand', $event)" @node-collapse="$emit('node-collapse', $event)" @value-change="$emit('value-change', $event)" @node-delete="$emit('node-delete', $event)" @node-add="$emit('node-add', $event)" />
+      <JsonNode v-for="(child, index) in filteredChildren" :key="`${child.path.join('.')}-${index}`" :node="child" :editable="editable" :search-query="searchQuery" @node-click="$emit('node-click', $event)" @node-expand="$emit('node-expand', $event)" @node-collapse="$emit('node-collapse', $event)" @value-change="$emit('value-change', $event)" @key-change="$emit('key-change', $event)" @node-delete="$emit('node-delete', $event)" @node-add="$emit('node-add', $event)" />
 
       <!-- Add New Item UI -->
       <div v-if="showingAddForm" class="add-form">
@@ -129,6 +129,7 @@ interface Emits {
   "node-expand": [node: JsonNodeType];
   "node-collapse": [node: JsonNodeType];
   "value-change": [event: { node: JsonNodeType; value: any }];
+  "key-change": [event: { node: JsonNodeType; oldKey: string; newKey: string }];
   "node-delete": [node: JsonNodeType];
   "node-add": [event: { parent: JsonNodeType; key: string; value: any }];
 }
@@ -289,9 +290,10 @@ const startEditKey = () => {
 const saveKey = () => {
   if (editKey.value !== props.node.key) {
     // Emit key change event
-    emit("value-change", {
-      node: { ...props.node, key: editKey.value },
-      value: props.node.value
+    emit("key-change", {
+      node: props.node,
+      oldKey: props.node.key,
+      newKey: editKey.value
     });
   }
   cancelEditKey();

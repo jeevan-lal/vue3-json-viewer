@@ -1,66 +1,65 @@
 <template>
-  <div :class="['json-viewer', `theme-${theme}`]">
+  <div :class="['json-viewer', `theme-${theme}`, { 'no-header': hideHeader, 'no-footer': hideFooter }]">
     <!-- Menu Bar -->
-    <div class="menu-bar">
-      <div class="menu-section">
-        <!-- Mode Switcher -->
-        <div class="mode-switcher">
-          <button :class="['mode-btn', { active: currentMode === 'tree' }]" @click="setMode('tree')">
-            <TreeIcon />
-            <span v-if="!hideActionText">Tree</span>
-          </button>
-          <button :class="['mode-btn', { active: currentMode === 'text' }]" @click="setMode('text')">
-            <CodeIcon />
-            <span v-if="!hideActionText">Text</span>
-          </button>
-        </div>
+    <div v-if="!hideHeader" class="menu-bar">
+      <!-- Mode Switcher -->
+      <div v-if="!hideModeSwitcher" class="mode-switcher">
+        <button :class="['mode-btn', { active: currentMode === 'tree' }]" @click="setMode('tree')">
+          <TreeIcon />
+          <span v-if="!hideActionText">Tree</span>
+        </button>
+        <button :class="['mode-btn', { active: currentMode === 'text' }]" @click="setMode('text')">
+          <CodeIcon />
+          <span v-if="!hideActionText">Text</span>
+        </button>
       </div>
 
-      <div class="menu-section">
-        <!-- Tree Controls -->
-        <div v-if="currentMode === 'tree'" class="tree-controls">
-          <button class="control-btn" @click="expandAll" title="Expand All">
-            <ExpandIcon />
-            <span v-if="!hideActionText">Expand All</span>
-          </button>
-          <button class="control-btn" @click="collapseAll" title="Collapse All">
-            <CollapseIcon />
-            <span v-if="!hideActionText">Collapse All</span>
-          </button>
-        </div>
-
-        <!-- Edit Controls -->
-        <div class="edit-controls">
-          <button :class="['control-btn', { active: isEditMode }]" @click="toggleEditMode" title="Toggle Edit Mode">
-            <EditIcon />
-            <span v-if="!hideActionText">{{ isEditMode ? 'Exit Edit' : 'Edit' }}</span>
-          </button>
-          <template v-if="isEditMode">
-            <button class="control-btn save-btn" @click="saveChanges" title="Save Changes">
-              <SaveIcon />
-              <span v-if="!hideActionText">Save</span>
-            </button>
-            <button class="control-btn cancel-btn" @click="cancelChanges" title="Cancel Changes">
-              <CancelIcon />
-              <span v-if="!hideActionText">Cancel</span>
-            </button>
-          </template>
-        </div>
+      <!-- Tree Controls -->
+      <div v-if="!hideTreeControls && currentMode === 'tree'" class="tree-controls">
+        <button class="control-btn" @click="expandAll" title="Expand All">
+          <ExpandIcon />
+          <span v-if="!hideActionText">Expand All</span>
+        </button>
+        <button class="control-btn" @click="collapseAll" title="Collapse All">
+          <CollapseIcon />
+          <span v-if="!hideActionText">Collapse All</span>
+        </button>
       </div>
 
-      <div class="menu-section">
-        <!-- Additional Controls -->
-        <div class="additional-controls">
-          <button class="control-btn" @click="copyToClipboard" title="Copy JSON">
-            <CopyIcon />
+      <!-- Edit Controls -->
+      <div v-if="!hideEditControls" class="edit-controls">
+        <button :class="['control-btn', { active: isEditMode }]" @click="toggleEditMode" title="Toggle Edit Mode">
+          <EditIcon />
+          <span v-if="!hideActionText">{{ isEditMode ? 'Exit Edit' : 'Edit' }}</span>
+        </button>
+        <template v-if="isEditMode">
+          <button class="control-btn save-btn" @click="saveChanges" title="Save Changes">
+            <SaveIcon />
+            <span v-if="!hideActionText">Save</span>
           </button>
-          <button class="control-btn" @click="downloadJson" title="Download JSON">
-            <DownloadIcon />
+          <button class="control-btn cancel-btn" @click="cancelChanges" title="Cancel Changes">
+            <CancelIcon />
+            <span v-if="!hideActionText">Cancel</span>
           </button>
-          <button class="control-btn" @click="toggleTheme" title="Toggle Theme">
-            <ThemeIcon />
-          </button>
-        </div>
+        </template>
+      </div>
+
+      <!-- Additional Controls -->
+      <div class="additional-controls">
+        <button v-if="!hideSearchButton" class="control-btn" @click="toggleSearch" title="Search JSON">
+          <SearchIcon />
+          <span v-if="!hideActionText">Search</span>
+        </button>
+        <button v-if="!hideCopyButton" class="control-btn copy-btn" @click="copyToClipboard" title="Copy JSON">
+          <CopyIcon />
+        </button>
+        <button v-if="!hideDownloadButton" class="control-btn" @click="downloadJson" title="Download JSON">
+          <DownloadIcon />
+        </button>
+        <button v-if="!hideThemeButton" class="control-btn" @click="toggleTheme" :title="props.theme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme'">
+          <MoonIcon v-if="props.theme === 'light'" class="theme-icon" />
+          <SunIcon v-else class="theme-icon" />
+        </button>
       </div>
     </div>
 
@@ -76,7 +75,7 @@
 
       <!-- Tree Mode -->
       <div v-if="currentMode === 'tree'" class="tree-view">
-        <JsonNode v-for="(node, index) in rootNodes" :key="`${node.path.join('.')}-${index}`" :node="node" :editable="isEditMode" :search-query="searchQuery" @node-click="handleNodeClick" @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" @value-change="handleValueChange" @node-delete="handleNodeDelete" @node-add="handleNodeAdd" />
+        <JsonNode v-for="(node, index) in rootNodes" :key="`${node.path.join('.')}-${index}`" :node="node" :editable="isEditMode" :search-query="searchQuery" @node-click="handleNodeClick" @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" @value-change="handleValueChange" @key-change="handleKeyChange" @node-delete="handleNodeDelete" @node-add="handleNodeAdd" />
       </div>
 
       <!-- Text Mode -->
@@ -90,14 +89,14 @@
             <pre class="json-display"><code v-html="highlightedJson"></code></pre>
           </div>
         </div>
-        <div v-if="hasJsonError" class="error-message">
+        <div v-if="hasJsonError" class="json-error-message">
           Invalid JSON: {{ jsonError }}
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="footer">
+    <div v-if="!hideFooter" class="footer">
       <div class="footer-info">
         <span class="info-item">
           Mode: <strong>{{ currentMode }}</strong>
@@ -108,12 +107,6 @@
         <span v-if="currentMode === 'tree'" class="info-item">
           Nodes: <strong>{{ totalNodes }}</strong>
         </span>
-      </div>
-      <div class="footer-actions">
-        <button class="footer-btn" @click="toggleSearch">
-          <SearchIcon />
-          <span v-if="!hideActionText">Search</span>
-        </button>
       </div>
     </div>
   </div>
@@ -132,9 +125,10 @@ import {
   CancelIcon,
   CopyIcon,
   DownloadIcon,
-  ThemeIcon,
   SearchIcon,
   CloseIcon,
+  MoonIcon,
+  SunIcon,
 } from "./icons";
 
 // Types
@@ -156,6 +150,15 @@ export interface Props {
   showLineNumbers?: boolean;
   maxDepth?: number;
   hideActionText?: boolean;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+  hideModeSwitcher?: boolean;
+  hideTreeControls?: boolean;
+  hideEditControls?: boolean;
+  hideSearchButton?: boolean;
+  hideCopyButton?: boolean;
+  hideDownloadButton?: boolean;
+  hideThemeButton?: boolean;
 }
 
 interface Emits {
@@ -163,6 +166,7 @@ interface Emits {
   "node-click": [node: JsonNodeType];
   "node-expand": [node: JsonNodeType];
   "node-collapse": [node: JsonNodeType];
+  "key-change": [event: { node: JsonNodeType; oldKey: string; newKey: string }];
   "edit-start": [];
   "edit-save": [data: any];
   "edit-cancel": [];
@@ -177,6 +181,15 @@ const props = withDefaults(defineProps<Props>(), {
   showLineNumbers: false,
   maxDepth: 3,
   hideActionText: false,
+  hideHeader: false,
+  hideFooter: false,
+  hideModeSwitcher: false,
+  hideTreeControls: false,
+  hideEditControls: false,
+  hideSearchButton: false,
+  hideCopyButton: false,
+  hideDownloadButton: false,
+  hideThemeButton: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -309,7 +322,14 @@ const copyToClipboard = async () => {
   try {
     const text = JSON.stringify(props.data, null, 2);
     await navigator.clipboard.writeText(text);
-    // Show success notification
+    // Trigger copy animation
+    const copyBtn = document.querySelector('.copy-btn');
+    if (copyBtn) {
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+      }, 1500);
+    }
   } catch (error) {
     console.error("Failed to copy to clipboard:", error);
   }
@@ -448,9 +468,26 @@ const handleNodeCollapse = (node: JsonNodeType) => {
 };
 
 const handleValueChange = (event: { node: JsonNodeType; value: any }) => {
-  // Update the data and rebuild tree
   const newData = JSON.parse(JSON.stringify(props.data));
   setNestedValue(newData, event.node.path, event.value);
+  emit("update:data", newData);
+};
+
+const handleKeyChange = (event: { node: JsonNodeType; oldKey: string; newKey: string }) => {
+  const newData = JSON.parse(JSON.stringify(props.data));
+  const parentPath = event.node.path.slice(0, -1);
+  const parent = getNestedValue(newData, parentPath);
+
+  if (parent && typeof parent === 'object') {
+    // Store the value
+    const value = parent[event.oldKey];
+    // Delete the old key
+    delete parent[event.oldKey];
+    // Add the new key with the same value
+    parent[event.newKey] = value;
+    // Update the path in the node
+    event.node.path[event.node.path.length - 1] = event.newKey;
+  }
   emit("update:data", newData);
 };
 
@@ -474,7 +511,6 @@ const handleNodeAdd = (event: { parent: JsonNodeType; key: string; value: any })
   emit("update:data", newData);
 };
 
-// Helper functions
 const setNestedValue = (obj: any, path: string[], value: any) => {
   const lastKey = path[path.length - 1];
   const parent = path.slice(0, -1).reduce((current, key) => current[key], obj);
@@ -496,13 +532,11 @@ const getNestedValue = (obj: any, path: string[]) => {
   return path.reduce((current, key) => current[key], obj);
 };
 
-// Watchers
 watch(() => props.data, (newData) => {
   rootNodes.value = buildTreeNodes(newData);
   jsonText.value = JSON.stringify(newData, null, 2);
 }, { deep: true, immediate: true });
 
-// Lifecycle
 onMounted(() => {
   rootNodes.value = buildTreeNodes(props.data);
   jsonText.value = JSON.stringify(props.data, null, 2);
@@ -522,8 +556,19 @@ onMounted(() => {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Theme Variables */
-.theme-light {
+.json-viewer {
+  /* Base styles */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Light theme defaults */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
@@ -535,9 +580,15 @@ onMounted(() => {
   --success-color: #10b981;
   --error-color: #ef4444;
   --warning-color: #f59e0b;
+
+  /* Apply theme variables */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
-.theme-dark {
+/* Dark theme - only affects this component */
+.json-viewer.theme-dark {
   --bg-primary: #1f2937;
   --bg-secondary: #111827;
   --bg-tertiary: #374151;
@@ -551,27 +602,30 @@ onMounted(() => {
   --warning-color: #fbbf24;
 }
 
-.json-viewer {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+/* Light theme - only affects this component */
+.json-viewer.theme-light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --accent-color: #3b82f6;
+  --hover-color: #f1f5f9;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
 }
 
 /* Menu Bar */
 .menu-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 12px 16px;
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   flex-wrap: wrap;
-  gap: 12px;
-}
-
-.menu-section {
-  display: flex;
-  align-items: center;
   gap: 12px;
 }
 
@@ -661,6 +715,80 @@ onMounted(() => {
   color: white;
 }
 
+/* Theme Icon Styling */
+.theme-icon {
+  transition: all 0.3s ease;
+}
+
+.theme-btn:hover .theme-icon {
+  transform: scale(1.1);
+}
+
+.theme-btn {
+  transition: all 0.2s ease;
+}
+
+/* Ensure SVG icons inherit the theme icon styling */
+.theme-icon svg {
+  transition: all 0.3s ease;
+}
+
+/* Copy Button Animation */
+.copy-btn {
+  position: relative;
+}
+
+.copy-btn.copied {
+  animation: copySuccess 0.3s ease-in-out;
+  background-color: var(--success-color) !important;
+  color: white !important;
+  border-color: var(--success-color) !important;
+}
+
+.copy-btn.copied::after {
+  content: "✓";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  animation: checkmarkAppear 0.3s ease-in-out;
+}
+
+@keyframes copySuccess {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkmarkAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Search Bar */
 .search-bar {
   display: flex;
@@ -707,6 +835,15 @@ onMounted(() => {
   background-color: var(--bg-primary);
 }
 
+/* When header is hidden, remove top border from view area */
+.json-viewer.no-header .view-area {
+  border-top: none;
+}
+
+.json-viewer.no-header .search-bar {
+  border-top: none;
+}
+
 .tree-view {
   padding: 16px;
 }
@@ -718,12 +855,12 @@ onMounted(() => {
 
 .text-editor {
   height: 100%;
-  min-height: 400px;
 }
 
 .json-textarea {
   width: 100%;
   height: 100%;
+  min-height: 273px;
   padding: 16px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -757,7 +894,7 @@ onMounted(() => {
   margin: 0;
 }
 
-.error-message {
+.text-view .json-error-message {
   margin-top: 8px;
   padding: 8px 12px;
   background-color: rgba(239, 68, 68, 0.1);
@@ -879,47 +1016,36 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
-.footer-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.footer-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.footer-btn:hover {
-  background-color: var(--hover-color);
-  color: var(--text-primary);
-}
-
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .control-btn span {
+    display: none;
+  }
+
+  .mode-btn span {
+    display: none;
+  }
+}
+
+/* Hide hidden sections completely */
+.menu-bar.hidden {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .menu-bar {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
   }
 
-  .menu-section {
-    justify-content: center;
-  }
-
   .footer {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    justify-content: center;
   }
 
   .footer-info {
-    justify-content: center;
+    display: flex;
+    gap: 12px;
   }
 }
 </style>

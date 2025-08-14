@@ -23,6 +23,11 @@ declare const _default: import("vue").DefineComponent<import("vue").ExtractPropT
         node: JsonNodeType;
         value: any;
     }) => void;
+    "key-change": (event: {
+        node: JsonNodeType;
+        oldKey: string;
+        newKey: string;
+    }) => void;
     "node-delete": (node: JsonNodeType) => void;
     "node-add": (event: {
         parent: JsonNodeType;
@@ -39,6 +44,11 @@ declare const _default: import("vue").DefineComponent<import("vue").ExtractPropT
     "onValue-change"?: ((event: {
         node: JsonNodeType;
         value: any;
+    }) => any) | undefined;
+    "onKey-change"?: ((event: {
+        node: JsonNodeType;
+        oldKey: string;
+        newKey: string;
     }) => any) | undefined;
     "onNode-delete"?: ((node: JsonNodeType) => any) | undefined;
     "onNode-add"?: ((event: {

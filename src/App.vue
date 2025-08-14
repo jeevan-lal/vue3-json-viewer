@@ -21,19 +21,61 @@
               <input type="checkbox" v-model="isDarkTheme" @change="toggleTheme" />
               Dark Theme
             </label>
-                         <label>
-               <input type="checkbox" v-model="showLineNumbers" />
-               Show Line Numbers
-             </label>
-             <label>
-               <input type="checkbox" v-model="hideActionText" />
-               Hide Button Text
-             </label>
-           </div>
+            <label>
+              <input type="checkbox" v-model="showLineNumbers" />
+              Show Line Numbers
+            </label>
+            <label>
+              <input type="checkbox" v-model="hideActionText" />
+              Hide Button Text
+            </label>
+          </div>
+
+          <div class="props-controls">
+            <h4>UI Visibility Controls</h4>
+            <div class="props-grid">
+              <label>
+                <input type="checkbox" v-model="hideHeader" />
+                Hide Header
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideFooter" />
+                Hide Footer
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideModeSwitcher" />
+                Hide Mode Switcher
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideTreeControls" />
+                Hide Tree Controls
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideEditControls" />
+                Hide Edit Controls
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideSearchButton" />
+                Hide Search Button
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideCopyButton" />
+                Hide Copy Button
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideDownloadButton" />
+                Hide Download Button
+              </label>
+              <label>
+                <input type="checkbox" v-model="hideThemeButton" />
+                Hide Theme Button
+              </label>
+            </div>
+          </div>
         </div>
 
         <div class="json-viewer-container">
-                     <JsonViewer v-model:data="jsonData" :editable="true" :theme="isDarkTheme ? 'dark' : 'light'" default-mode="tree" :max-depth="2" :show-line-numbers="showLineNumbers" :hide-action-text="hideActionText" @update:data="handleDataUpdate" @node-click="handleNodeClick" @edit-save="handleEditSave" @edit-cancel="handleEditCancel" @theme-change="handleThemeChange" />
+          <JsonViewer v-model:data="jsonData" :editable="true" :theme="isDarkTheme ? 'dark' : 'light'" default-mode="tree" :max-depth="2" :show-line-numbers="showLineNumbers" :hide-action-text="hideActionText" :hide-header="hideHeader" :hide-footer="hideFooter" :hide-mode-switcher="hideModeSwitcher" :hide-tree-controls="hideTreeControls" :hide-edit-controls="hideEditControls" :hide-search-button="hideSearchButton" :hide-copy-button="hideCopyButton" :hide-download-button="hideDownloadButton" :hide-theme-button="hideThemeButton" @update:data="handleDataUpdate" @node-click="handleNodeClick" @edit-save="handleEditSave" @edit-cancel="handleEditCancel" @theme-change="handleThemeChange" />
         </div>
       </div>
 
@@ -43,13 +85,15 @@
           <li>✅ Tree Mode with expandable/collapsible nodes</li>
           <li>✅ Text Mode with syntax highlighting</li>
           <li>✅ Inline editing capabilities</li>
+          <li>✅ Key editing (rename object keys)</li>
           <li>✅ Add/Remove nodes and properties</li>
           <li>✅ Search functionality</li>
-          <li>✅ Copy to clipboard</li>
+          <li>✅ Copy to clipboard with visual feedback</li>
           <li>✅ Download JSON file</li>
           <li>✅ Light/Dark theme support</li>
           <li>✅ Responsive design</li>
           <li>✅ Keyboard navigation</li>
+          <li>✅ Customizable UI (hide buttons/sections)</li>
         </ul>
 
         <div class="usage-example">
@@ -59,6 +103,10 @@
   :editable="true"
   theme="dark"
   default-mode="tree"
+  :hide-header="false"
+  :hide-footer="true"
+  :hide-edit-controls="false"
+  :hide-search-button="true"
   @update:data="handleDataUpdate"
 /&gt;</code></pre>
         </div>
@@ -96,6 +144,17 @@ const jsonData = ref({});
 const isDarkTheme = ref(false);
 const showLineNumbers = ref(true);
 const hideActionText = ref(false);
+
+// UI Visibility props
+const hideHeader = ref(false);
+const hideFooter = ref(false);
+const hideModeSwitcher = ref(false);
+const hideTreeControls = ref(false);
+const hideEditControls = ref(false);
+const hideSearchButton = ref(false);
+const hideCopyButton = ref(false);
+const hideDownloadButton = ref(false);
+const hideThemeButton = ref(false);
 
 // Sample data sets
 const sampleData = {
@@ -209,7 +268,9 @@ const loadSample = (type: keyof typeof sampleData) => {
 };
 
 const toggleTheme = () => {
-  document.body.classList.toggle("dark-theme", isDarkTheme.value);
+  // This only affects the JsonViewer component theme
+  // No global body class modifications
+  console.log("Toggle theme clicked - theme will only affect JsonViewer component");
 };
 
 const handleDataUpdate = (newData: any) => {
@@ -231,17 +292,12 @@ const handleEditCancel = () => {
 
 const handleThemeChange = (theme: "light" | "dark") => {
   isDarkTheme.value = theme === "dark";
-  document.body.classList.toggle("dark-theme", isDarkTheme.value);
+  console.log("Theme changed to:", theme);
 };
 
 // Lifecycle
 onMounted(() => {
   loadSample("complex");
-
-  // Set initial theme
-  if (isDarkTheme.value) {
-    document.body.classList.add("dark-theme");
-  }
 });
 </script>
 
@@ -259,11 +315,6 @@ body {
   color: #1e293b;
   background-color: #f8fafc;
   transition: all 0.3s ease;
-}
-
-body.dark-theme {
-  color: #f9fafb;
-  background-color: #111827;
 }
 
 #app {
@@ -318,10 +369,7 @@ body.dark-theme {
   border: 1px solid #e2e8f0;
 }
 
-body.dark-theme .demo-controls {
-  background: #1f2937;
-  border-color: #374151;
-}
+
 
 .demo-controls h3 {
   margin-bottom: 1rem;
@@ -329,9 +377,7 @@ body.dark-theme .demo-controls {
   font-weight: 600;
 }
 
-body.dark-theme .demo-controls h3 {
-  color: #f9fafb;
-}
+
 
 .sample-buttons {
   display: flex;
@@ -357,16 +403,7 @@ body.dark-theme .demo-controls h3 {
   border-color: #3b82f6;
 }
 
-body.dark-theme .sample-btn {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
 
-body.dark-theme .sample-btn:hover {
-  background: #4b5563;
-  border-color: #60a5fa;
-}
 
 .theme-controls {
   padding-top: 1rem;
@@ -376,9 +413,7 @@ body.dark-theme .sample-btn:hover {
   flex-wrap: wrap;
 }
 
-body.dark-theme .theme-controls {
-  border-color: #4b5563;
-}
+
 
 .theme-controls label {
   display: flex;
@@ -387,6 +422,55 @@ body.dark-theme .theme-controls {
   cursor: pointer;
   font-size: 0.875rem;
 }
+
+.theme-note {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.props-controls {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+body.dark-theme .props-controls {
+  border-color: #4b5563;
+}
+
+.props-controls h4 {
+  margin-bottom: 1rem;
+  color: #374151;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+
+
+.props-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.props-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.props-grid label:hover {
+  background-color: #f3f4f6;
+}
+
+
 
 .json-viewer-container {
   flex: 1;
@@ -403,10 +487,7 @@ body.dark-theme .theme-controls {
   height: fit-content;
 }
 
-body.dark-theme .info-panel {
-  background: #1f2937;
-  border-color: #374151;
-}
+
 
 .info-panel h3,
 .info-panel h4 {
@@ -415,10 +496,7 @@ body.dark-theme .info-panel {
   margin-bottom: 1rem;
 }
 
-body.dark-theme .info-panel h3,
-body.dark-theme .info-panel h4 {
-  color: #f9fafb;
-}
+
 
 .feature-list {
   list-style: none;
@@ -431,18 +509,14 @@ body.dark-theme .info-panel h4 {
   font-size: 0.875rem;
 }
 
-body.dark-theme .feature-list li {
-  color: #9ca3af;
-}
+
 
 .usage-example {
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
 }
 
-body.dark-theme .usage-example {
-  border-color: #4b5563;
-}
+
 
 .usage-example pre {
   background: #f8fafc;
@@ -454,11 +528,7 @@ body.dark-theme .usage-example {
   font-family: 'Fira Code', 'Monaco', monospace;
 }
 
-body.dark-theme .usage-example pre {
-  background: #111827;
-  border-color: #374151;
-  color: #f9fafb;
-}
+
 
 /* Footer */
 .app-footer {
@@ -470,11 +540,7 @@ body.dark-theme .usage-example pre {
   font-size: 0.875rem;
 }
 
-body.dark-theme .app-footer {
-  background: #0f172a;
-  border-color: #1e293b;
-  color: #94a3b8;
-}
+
 
 .footer-content {
   display: flex;
@@ -526,27 +592,7 @@ body.dark-theme .app-footer {
   transform: translateY(-1px);
 }
 
-body.dark-theme .github-link {
-  color: #f9fafb;
-  background: #1e293b;
-  border-color: #374151;
-}
 
-body.dark-theme .github-link:hover {
-  background: #334155;
-  border-color: #475569;
-}
-
-body.dark-theme .npm-link {
-  color: #fca5a5;
-  background: #450a0a;
-  border-color: #7f1d1d;
-}
-
-body.dark-theme .npm-link:hover {
-  background: #7f1d1d;
-  border-color: #991b1b;
-}
 
 .github-icon,
 .npm-icon {
@@ -582,10 +628,5 @@ body.dark-theme .npm-link:hover {
   .sample-btn {
     text-align: center;
   }
-}
-
-/* Smooth transitions for theme switching */
-* {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 </style>
