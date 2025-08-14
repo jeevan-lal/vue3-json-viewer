@@ -1,6 +1,6 @@
 {
   "name": "@ctechhindi/vue3-json-viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern, sleek Vue 3 JSON viewer component with tree and text modes",
   "main": "src/components/JsonViewer.vue",
   "scripts": {
