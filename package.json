@@ -1,0 +1,49 @@
+{
+  "name": "vue3-json-viewer",
+  "version": "1.0.0",
+  "description": "A modern, sleek Vue 3 JSON viewer component with tree and text modes",
+  "main": "src/components/JsonViewer.vue",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/eslint-config-typescript": "^11.0.0",
+    "@vue/tsconfig": "^0.4.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-vue": "^9.15.0",
+    "typescript": "~5.1.6",
+    "vite": "^4.4.5",
+    "vue-tsc": "^1.8.5"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "json",
+    "viewer",
+    "editor",
+    "tree",
+    "typescript",
+    "composition-api"
+  ],
+  "author": "Vue JSON Viewer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeevan-lal/vue3-json-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jeevan-lal/vue3-json-viewer/issues"
+  },
+  "homepage": "https://github.com/jeevan-lal/vue3-json-viewer#readme"
+}
