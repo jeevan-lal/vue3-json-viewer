@@ -113,9 +113,9 @@
         @node-click="$emit('node-click', $event)"
         @node-expand="$emit('node-expand', $event)"
         @node-collapse="$emit('node-collapse', $event)"
-        @value-change="$emit('value-change', $event.node, $event.value)"
+        @value-change="$emit('value-change', $event)"
         @node-delete="$emit('node-delete', $event)"
-        @node-add="$emit('node-add', $event.parent, $event.key, $event.value)"
+        @node-add="$emit('node-add', $event)"
       />
 
       <!-- Add New Item UI -->

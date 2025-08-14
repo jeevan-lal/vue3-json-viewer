@@ -465,10 +465,10 @@ const handleNodeCollapse = (node: JsonNodeType) => {
   emit("node-collapse", node);
 };
 
-const handleValueChange = (node: JsonNodeType, newValue: any) => {
+const handleValueChange = (event: { node: JsonNodeType; value: any }) => {
   // Update the data and rebuild tree
   const newData = JSON.parse(JSON.stringify(props.data));
-  setNestedValue(newData, node.path, newValue);
+  setNestedValue(newData, event.node.path, event.value);
   emit("update:data", newData);
 };
 
@@ -478,15 +478,15 @@ const handleNodeDelete = (node: JsonNodeType) => {
   emit("update:data", newData);
 };
 
-const handleNodeAdd = (parentNode: JsonNodeType, key: string, value: any) => {
+const handleNodeAdd = (event: { parent: JsonNodeType; key: string; value: any }) => {
   const newData = JSON.parse(JSON.stringify(props.data));
-  const parentPath = parentNode.path;
+  const parentPath = event.parent.path;
   const parent = getNestedValue(newData, parentPath);
   
   if (Array.isArray(parent)) {
-    parent.push(value);
+    parent.push(event.value);
   } else if (typeof parent === "object") {
-    parent[key] = value;
+    parent[event.key] = event.value;
   }
   
   emit("update:data", newData);

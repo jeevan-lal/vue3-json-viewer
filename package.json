@@ -1,11 +1,12 @@
 {
-  "name": "vue3-json-viewer",
+  "name": "@ctechhindi/vue3-json-viewer",
   "version": "1.0.0",
   "description": "A modern, sleek Vue 3 JSON viewer component with tree and text modes",
   "main": "src/components/JsonViewer.vue",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build:demo": "vue-tsc && vite build --config vite.demo.config.ts",
     "preview": "vite preview",
     "lint": "eslint src --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "type-check": "vue-tsc --noEmit"
@@ -36,7 +37,7 @@
     "typescript",
     "composition-api"
   ],
-  "author": "Vue JSON Viewer",
+  "author": "Jeevan Lal",
   "license": "MIT",
   "repository": {
     "type": "git",

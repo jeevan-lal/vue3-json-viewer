@@ -15,17 +15,22 @@ A modern, sleek Vue 3 component for viewing, editing, and manipulating JSON data
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⌨️ **Keyboard Navigation**: Full keyboard support
 - ♿ **Accessibility**: Screen reader support with proper ARIA labels
+- 🚀 **Dual Build System**: Library build for npm + Demo build for preview
 
 ## 🚀 Installation
 
+This component is now available on npm as `@ctechhindi/vue3-json-viewer`
+
+[@ctechhindi/vue3-json-viewer](https://www.npmjs.com/package/@ctechhindi/vue3-json-viewer)  
+
 ```bash
-npm install vue3-json-viewer
+npm install @ctechhindi/vue3-json-viewer
 ```
 
 Or with yarn:
 
 ```bash
-yarn add vue3-json-viewer
+yarn add @ctechhindi/vue3-json-viewer
 ```
 
 ## 📖 Usage
@@ -47,7 +52,7 @@ yarn add vue3-json-viewer
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import JsonViewer from 'vue3-json-viewer'
+import JsonViewer from '@ctechhindi/vue3-json-viewer'
 
 const jsonData = ref({
   name: "John Doe",
@@ -89,7 +94,7 @@ const handleDataUpdate = (newData: any) => {
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import JsonViewer from 'vue3-json-viewer'
+import JsonViewer from '@ctechhindi/vue3-json-viewer'
 
 const complexData = ref({
   // Your complex JSON data
@@ -199,6 +204,30 @@ npm install
 # Start development server
 npm run dev
 ```
+
+### Build Options
+
+```bash
+# Build the library component (for npm publishing)
+npm run build
+
+# Build the demo app to ./preview folder
+npm run build:demo
+
+# Preview the built demo app
+npm run preview
+```
+
+### Build Outputs
+
+- **`npm run build`** → Creates `dist/` folder with library files:
+  - `json-viewer.umd.js` - UMD bundle
+  - `json-viewer.mjs` - ES module bundle
+  - `style.css` - Component styles
+
+- **`npm run build:demo`** → Creates `preview/` folder with demo app:
+  - `index.html` - Demo page
+  - `assets/` - Bundled CSS and JavaScript
 
 ### Build
 
