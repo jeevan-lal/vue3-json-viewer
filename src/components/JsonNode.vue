@@ -1,17 +1,14 @@
 <template>
   <div :class="['json-node', `level-${node.level}`]">
     <!-- Node Header -->
-    <div
-      :class="['node-header', { 
-        expandable: isExpandable, 
-        expanded: node.expanded,
-        highlighted: isHighlighted 
-      }]"
-      @click="handleHeaderClick"
-    >
+    <div :class="['node-header', {
+      expandable: isExpandable,
+      expanded: node.expanded,
+      highlighted: isHighlighted
+    }]" @click="handleHeaderClick">
       <!-- Indentation -->
       <div class="indentation" :style="{ width: `${node.level * 20}px` }"></div>
-      
+
       <!-- Expand/Collapse Icon -->
       <div class="expand-icon" v-if="isExpandable">
         <ChevronRightIcon v-if="!node.expanded" />
@@ -21,15 +18,7 @@
 
       <!-- Node Key -->
       <span class="node-key" :class="{ editable: editable && isKeyEditable }">
-        <input
-          v-if="editingKey"
-          v-model="editKey"
-          @blur="saveKey"
-          @keydown.enter="saveKey"
-          @keydown.escape="cancelEditKey"
-          class="key-input"
-          ref="keyInput"
-        />
+        <input v-if="editingKey" v-model="editKey" @blur="saveKey" @keydown.enter="saveKey" @keydown.escape="cancelEditKey" class="key-input" ref="keyInput" />
         <span v-else @dblclick="startEditKey">{{ displayKey }}</span>
       </span>
 
@@ -40,22 +29,8 @@
       <div class="node-value">
         <!-- Primitive Values -->
         <template v-if="!isExpandable">
-          <input
-            v-if="editingValue"
-            v-model="editValue"
-            :type="getInputType()"
-            @blur="saveValue"
-            @keydown.enter="saveValue"
-            @keydown.escape="cancelEditValue"
-            class="value-input"
-            :class="`value-${node.type}`"
-            ref="valueInput"
-          />
-          <span
-            v-else
-            :class="['value-display', `value-${node.type}`, { editable: editable }]"
-            @dblclick="startEditValue"
-          >
+          <input v-if="editingValue" v-model="editValue" :type="getInputType()" @blur="saveValue" @keydown.enter="saveValue" @keydown.escape="cancelEditValue" class="value-input" :class="`value-${node.type}`" ref="valueInput" />
+          <span v-else :class="['value-display', `value-${node.type}`, { editable: editable }]" @dblclick="startEditValue">
             {{ formatValue(node.value) }}
           </span>
         </template>
@@ -71,32 +46,18 @@
       <!-- Controls -->
       <div v-if="editable" class="node-controls">
         <!-- Expand/Collapse for current node -->
-        <button
-          v-if="isExpandable"
-          @click.stop="toggleExpand"
-          class="control-icon"
-          :title="node.expanded ? 'Collapse' : 'Expand'"
-        >
+        <button v-if="isExpandable" @click.stop="toggleExpand" class="control-icon" :title="node.expanded ? 'Collapse' : 'Expand'">
           <CollapseIcon v-if="node.expanded" />
           <ExpandIcon v-else />
         </button>
 
         <!-- Add Child -->
-        <button
-          v-if="node.type === 'object' || node.type === 'array'"
-          @click.stop="showAddDialog"
-          class="control-icon add-icon"
-          title="Add Item"
-        >
+        <button v-if="node.type === 'object' || node.type === 'array'" @click.stop="showAddDialog" class="control-icon add-icon" title="Add Item">
           <PlusIcon />
         </button>
 
         <!-- Delete Node -->
-        <button
-          @click.stop="deleteNode"
-          class="control-icon delete-icon"
-          title="Delete"
-        >
+        <button @click.stop="deleteNode" class="control-icon delete-icon" title="Delete">
           <TrashIcon />
         </button>
       </div>
@@ -104,46 +65,21 @@
 
     <!-- Children -->
     <div v-if="isExpandable && node.expanded && node.children" class="children">
-      <JsonNode
-        v-for="(child, index) in filteredChildren"
-        :key="`${child.path.join('.')}-${index}`"
-        :node="child"
-        :editable="editable"
-        :search-query="searchQuery"
-        @node-click="$emit('node-click', $event)"
-        @node-expand="$emit('node-expand', $event)"
-        @node-collapse="$emit('node-collapse', $event)"
-        @value-change="$emit('value-change', $event)"
-        @node-delete="$emit('node-delete', $event)"
-        @node-add="$emit('node-add', $event)"
-      />
+      <JsonNode v-for="(child, index) in filteredChildren" :key="`${child.path.join('.')}-${index}`" :node="child" :editable="editable" :search-query="searchQuery" @node-click="$emit('node-click', $event)" @node-expand="$emit('node-expand', $event)" @node-collapse="$emit('node-collapse', $event)" @value-change="$emit('value-change', $event)" @node-delete="$emit('node-delete', $event)" @node-add="$emit('node-add', $event)" />
 
       <!-- Add New Item UI -->
       <div v-if="showingAddForm" class="add-form">
         <div class="indentation" :style="{ width: `${(node.level + 1) * 20}px` }"></div>
         <div class="expand-placeholder"></div>
-        
+
         <!-- Key input for objects -->
-        <input
-          v-if="node.type === 'object'"
-          v-model="newItemKey"
-          placeholder="Key"
-          class="key-input"
-          @keydown.enter="addNewItem"
-          @keydown.escape="cancelAdd"
-        />
-        
+        <input v-if="node.type === 'object'" v-model="newItemKey" placeholder="Key" class="key-input" @keydown.enter="addNewItem" @keydown.escape="cancelAdd" />
+
         <span v-if="node.type === 'object'" class="colon">:</span>
-        
+
         <!-- Value input -->
-        <input
-          v-model="newItemValue"
-          placeholder="Value"
-          class="value-input"
-          @keydown.enter="addNewItem"
-          @keydown.escape="cancelAdd"
-        />
-        
+        <input v-model="newItemValue" placeholder="Value" class="value-input" @keydown.enter="addNewItem" @keydown.escape="cancelAdd" />
+
         <!-- Add/Cancel buttons -->
         <div class="add-controls">
           <button @click="addNewItem" class="add-btn" title="Add">
@@ -231,7 +167,7 @@ const displayKey = computed(() => {
   if (props.node.level === 0) {
     return props.node.type === "array" ? "Array" : "Object";
   }
-  
+
   // Add quotes for object keys, show index for arrays
   const parent = getParentType();
   if (parent === "array") {
@@ -242,12 +178,12 @@ const displayKey = computed(() => {
 
 const isHighlighted = computed(() => {
   if (!props.searchQuery) return false;
-  
+
   const query = props.searchQuery.toLowerCase();
   const keyMatch = props.node.key.toLowerCase().includes(query);
-  const valueMatch = typeof props.node.value === "string" && 
+  const valueMatch = typeof props.node.value === "string" &&
     props.node.value.toLowerCase().includes(query);
-  
+
   return keyMatch || valueMatch;
 });
 
@@ -255,15 +191,15 @@ const filteredChildren = computed(() => {
   if (!props.node.children || !props.searchQuery) {
     return props.node.children || [];
   }
-  
+
   // Filter children based on search query
   return props.node.children.filter(child => {
     const query = props.searchQuery.toLowerCase();
     const keyMatch = child.key.toLowerCase().includes(query);
-    const valueMatch = typeof child.value === "string" && 
+    const valueMatch = typeof child.value === "string" &&
       child.value.toLowerCase().includes(query);
     const hasMatchingDescendants = hasMatchingChildren(child, query);
-    
+
     return keyMatch || valueMatch || hasMatchingDescendants;
   });
 });
@@ -280,14 +216,14 @@ const getTypeSummary = (): string => {
     const length = Array.isArray(props.node.value) ? props.node.value.length : 0;
     return `Array[${length}]`;
   }
-  
+
   if (props.node.type === "object") {
-    const keys = props.node.value && typeof props.node.value === "object" 
-      ? Object.keys(props.node.value).length 
+    const keys = props.node.value && typeof props.node.value === "object"
+      ? Object.keys(props.node.value).length
       : 0;
     return `Object{${keys}}`;
   }
-  
+
   return "";
 };
 
@@ -312,13 +248,13 @@ const getInputType = (): string => {
 
 const hasMatchingChildren = (node: JsonNodeType, query: string): boolean => {
   if (!node.children) return false;
-  
+
   return node.children.some(child => {
     const keyMatch = child.key.toLowerCase().includes(query);
-    const valueMatch = typeof child.value === "string" && 
+    const valueMatch = typeof child.value === "string" &&
       child.value.toLowerCase().includes(query);
     const childMatch = hasMatchingChildren(child, query);
-    
+
     return keyMatch || valueMatch || childMatch;
   });
 };
@@ -340,10 +276,10 @@ const toggleExpand = () => {
 
 const startEditKey = () => {
   if (!props.editable || !isKeyEditable.value) return;
-  
+
   editKey.value = props.node.key;
   editingKey.value = true;
-  
+
   nextTick(() => {
     keyInput.value?.focus();
     keyInput.value?.select();
@@ -353,9 +289,9 @@ const startEditKey = () => {
 const saveKey = () => {
   if (editKey.value !== props.node.key) {
     // Emit key change event
-    emit("value-change", { 
-      node: { ...props.node, key: editKey.value }, 
-      value: props.node.value 
+    emit("value-change", {
+      node: { ...props.node, key: editKey.value },
+      value: props.node.value
     });
   }
   cancelEditKey();
@@ -368,21 +304,21 @@ const cancelEditKey = () => {
 
 const startEditValue = () => {
   if (!props.editable || isExpandable.value) return;
-  
+
   if (props.node.type === "boolean") {
     // Toggle boolean directly
-    emit("value-change", { 
-      node: props.node, 
-      value: !props.node.value 
+    emit("value-change", {
+      node: props.node,
+      value: !props.node.value
     });
     return;
   }
-  
-  editValue.value = props.node.type === "string" 
-    ? props.node.value 
+
+  editValue.value = props.node.type === "string"
+    ? props.node.value
     : String(props.node.value);
   editingValue.value = true;
-  
+
   nextTick(() => {
     valueInput.value?.focus();
     valueInput.value?.select();
@@ -391,7 +327,7 @@ const startEditValue = () => {
 
 const saveValue = () => {
   let newValue: any = editValue.value;
-  
+
   // Convert value based on type
   try {
     switch (props.node.type) {
@@ -412,13 +348,13 @@ const saveValue = () => {
         // Try to parse as JSON for complex types
         newValue = JSON.parse(editValue.value);
     }
-    
+
     emit("value-change", { node: props.node, value: newValue });
   } catch (error) {
     alert("Invalid value format");
     return;
   }
-  
+
   cancelEditValue();
 };
 
@@ -437,7 +373,7 @@ const showAddDialog = () => {
   showingAddForm.value = true;
   newItemKey.value = "";
   newItemValue.value = "";
-  
+
   if (props.node.type === "array") {
     // For arrays, focus on value input
     nextTick(() => {
@@ -457,16 +393,16 @@ const addNewItem = () => {
   try {
     let key = newItemKey.value;
     let value: any = newItemValue.value;
-    
+
     if (props.node.type === "object" && !key.trim()) {
       alert("Key is required for object properties");
       return;
     }
-    
+
     if (props.node.type === "array") {
       key = (props.node.children?.length || 0).toString();
     }
-    
+
     // Try to parse value as JSON, fallback to string
     try {
       value = JSON.parse(newItemValue.value);
@@ -482,7 +418,7 @@ const addNewItem = () => {
         value = newItemValue.value;
       }
     }
-    
+
     emit("node-add", { parent: props.node, key, value });
     cancelAdd();
   } catch (error) {
@@ -753,11 +689,12 @@ watch(() => props.searchQuery, (newQuery) => {
   .json-node {
     font-size: 13px;
   }
-  
+
   .node-controls {
-    opacity: 1; /* Always show on mobile */
+    opacity: 1;
+    /* Always show on mobile */
   }
-  
+
   .indentation {
     width: 16px !important;
   }

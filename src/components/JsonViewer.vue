@@ -5,19 +5,13 @@
       <div class="menu-section">
         <!-- Mode Switcher -->
         <div class="mode-switcher">
-          <button
-            :class="['mode-btn', { active: currentMode === 'tree' }]"
-            @click="setMode('tree')"
-          >
+          <button :class="['mode-btn', { active: currentMode === 'tree' }]" @click="setMode('tree')">
             <TreeIcon />
-            Tree
+            <span v-if="!hideActionText">Tree</span>
           </button>
-          <button
-            :class="['mode-btn', { active: currentMode === 'text' }]"
-            @click="setMode('text')"
-          >
+          <button :class="['mode-btn', { active: currentMode === 'text' }]" @click="setMode('text')">
             <CodeIcon />
-            Text
+            <span v-if="!hideActionText">Text</span>
           </button>
         </div>
       </div>
@@ -27,32 +21,28 @@
         <div v-if="currentMode === 'tree'" class="tree-controls">
           <button class="control-btn" @click="expandAll" title="Expand All">
             <ExpandIcon />
-            Expand All
+            <span v-if="!hideActionText">Expand All</span>
           </button>
           <button class="control-btn" @click="collapseAll" title="Collapse All">
             <CollapseIcon />
-            Collapse All
+            <span v-if="!hideActionText">Collapse All</span>
           </button>
         </div>
 
         <!-- Edit Controls -->
         <div class="edit-controls">
-          <button
-            :class="['control-btn', { active: isEditMode }]"
-            @click="toggleEditMode"
-            title="Toggle Edit Mode"
-          >
+          <button :class="['control-btn', { active: isEditMode }]" @click="toggleEditMode" title="Toggle Edit Mode">
             <EditIcon />
-            {{ isEditMode ? 'Exit Edit' : 'Edit' }}
+            <span v-if="!hideActionText">{{ isEditMode ? 'Exit Edit' : 'Edit' }}</span>
           </button>
           <template v-if="isEditMode">
             <button class="control-btn save-btn" @click="saveChanges" title="Save Changes">
               <SaveIcon />
-              Save
+              <span v-if="!hideActionText">Save</span>
             </button>
             <button class="control-btn cancel-btn" @click="cancelChanges" title="Cancel Changes">
               <CancelIcon />
-              Cancel
+              <span v-if="!hideActionText">Cancel</span>
             </button>
           </template>
         </div>
@@ -78,12 +68,7 @@
     <div class="view-area">
       <!-- Search Bar -->
       <div v-if="showSearch" class="search-bar">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search JSON..."
-          class="search-input"
-        />
+        <input v-model="searchQuery" type="text" placeholder="Search JSON..." class="search-input" />
         <button class="search-btn" @click="toggleSearch">
           <CloseIcon />
         </button>
@@ -91,32 +76,19 @@
 
       <!-- Tree Mode -->
       <div v-if="currentMode === 'tree'" class="tree-view">
-        <JsonNode
-          v-for="(node, index) in rootNodes"
-          :key="`${node.path.join('.')}-${index}`"
-          :node="node"
-          :editable="isEditMode"
-          :search-query="searchQuery"
-          @node-click="handleNodeClick"
-          @node-expand="handleNodeExpand"
-          @node-collapse="handleNodeCollapse"
-          @value-change="handleValueChange"
-          @node-delete="handleNodeDelete"
-          @node-add="handleNodeAdd"
-        />
+        <JsonNode v-for="(node, index) in rootNodes" :key="`${node.path.join('.')}-${index}`" :node="node" :editable="isEditMode" :search-query="searchQuery" @node-click="handleNodeClick" @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" @value-change="handleValueChange" @node-delete="handleNodeDelete" @node-add="handleNodeAdd" />
       </div>
 
       <!-- Text Mode -->
       <div v-else class="text-view">
-        <div class="text-editor">
-          <textarea
-            v-if="isEditMode"
-            v-model="jsonText"
-            class="json-textarea"
-            :class="{ error: hasJsonError }"
-            @input="validateJson"
-          ></textarea>
-          <pre v-else class="json-display"><code v-html="highlightedJson"></code></pre>
+        <div class="text-editor" :class="{ 'with-line-numbers': showLineNumbers }">
+          <textarea v-if="isEditMode" v-model="jsonText" class="json-textarea" :class="{ error: hasJsonError }" @input="validateJson"></textarea>
+          <div v-else class="json-display-container">
+            <div v-if="showLineNumbers" class="line-numbers">
+              <span v-for="lineNum in lineNumbers" :key="lineNum" class="line-number">{{ lineNum }}</span>
+            </div>
+            <pre class="json-display"><code v-html="highlightedJson"></code></pre>
+          </div>
         </div>
         <div v-if="hasJsonError" class="error-message">
           Invalid JSON: {{ jsonError }}
@@ -140,7 +112,7 @@
       <div class="footer-actions">
         <button class="footer-btn" @click="toggleSearch">
           <SearchIcon />
-          Search
+          <span v-if="!hideActionText">Search</span>
         </button>
       </div>
     </div>
@@ -183,6 +155,7 @@ interface Props {
   defaultMode?: "tree" | "text";
   showLineNumbers?: boolean;
   maxDepth?: number;
+  hideActionText?: boolean;
 }
 
 interface Emits {
@@ -203,6 +176,7 @@ const props = withDefaults(defineProps<Props>(), {
   defaultMode: "tree",
   showLineNumbers: false,
   maxDepth: 3,
+  hideActionText: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -238,9 +212,17 @@ const totalNodes = computed(() => {
 
 const highlightedJson = computed(() => {
   if (!props.data) return "";
-  
+
   const jsonString = JSON.stringify(props.data, null, 2);
   return highlightJsonSyntax(jsonString);
+});
+
+const lineNumbers = computed(() => {
+  if (!props.data || !props.showLineNumbers) return [];
+
+  const jsonString = JSON.stringify(props.data, null, 2);
+  const lines = jsonString.split('\n');
+  return Array.from({ length: lines.length }, (_, i) => i + 1);
 });
 
 // Methods
@@ -277,7 +259,7 @@ const saveChanges = () => {
       return;
     }
   }
-  
+
   isEditMode.value = false;
   originalData.value = null;
   emit("edit-save", props.data);
@@ -371,7 +353,7 @@ const validateJson = () => {
 
 const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): JsonNodeType[] => {
   const nodes: JsonNodeType[] = [];
-  
+
   if (data === null) {
     return [{
       key: "",
@@ -381,7 +363,7 @@ const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): Json
       level,
     }];
   }
-  
+
   if (Array.isArray(data)) {
     data.forEach((item, index) => {
       const itemPath = [...path, index.toString()];
@@ -394,11 +376,11 @@ const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): Json
         level,
         expanded: level < props.maxDepth,
       };
-      
+
       if (itemType === "object" || itemType === "array") {
         node.children = buildTreeNodes(item, itemPath, level + 1);
       }
-      
+
       nodes.push(node);
     });
   } else if (typeof data === "object") {
@@ -413,15 +395,15 @@ const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): Json
         level,
         expanded: level < props.maxDepth,
       };
-      
+
       if (itemType === "object" || itemType === "array") {
         node.children = buildTreeNodes(value, itemPath, level + 1);
       }
-      
+
       nodes.push(node);
     });
   }
-  
+
   return nodes;
 };
 
@@ -482,13 +464,13 @@ const handleNodeAdd = (event: { parent: JsonNodeType; key: string; value: any })
   const newData = JSON.parse(JSON.stringify(props.data));
   const parentPath = event.parent.path;
   const parent = getNestedValue(newData, parentPath);
-  
+
   if (Array.isArray(parent)) {
     parent.push(event.value);
   } else if (typeof parent === "object") {
     parent[event.key] = event.value;
   }
-  
+
   emit("update:data", newData);
 };
 
@@ -502,7 +484,7 @@ const setNestedValue = (obj: any, path: string[], value: any) => {
 const deleteNestedValue = (obj: any, path: string[]) => {
   const lastKey = path[path.length - 1];
   const parent = path.slice(0, -1).reduce((current, key) => current[key], obj);
-  
+
   if (Array.isArray(parent)) {
     parent.splice(parseInt(lastKey), 1);
   } else {
@@ -771,7 +753,7 @@ onMounted(() => {
   font-family: 'Fira Code', 'Monaco', monospace;
   font-size: 14px;
   line-height: 1.5;
-  white-space: pre-wrap;
+  white-space: pre;
   margin: 0;
 }
 
@@ -828,6 +810,54 @@ onMounted(() => {
   color: #8b949e;
 }
 
+/* Line Numbers */
+.text-editor.with-line-numbers {
+  position: relative;
+}
+
+.json-display-container {
+  display: flex;
+  position: relative;
+}
+
+.line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px 12px 12px;
+  background-color: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  border-radius: 6px 0 0 6px;
+  font-family: 'Fira Code', 'Monaco', monospace;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+  min-width: 40px;
+  text-align: right;
+  line-height: 1.5;
+}
+
+.line-number {
+  height: 21px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 4px;
+}
+
+.json-display {
+  margin: 0;
+  padding: 12px;
+  border-radius: 0 6px 6px 0;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.theme-dark .line-numbers {
+  background-color: #1e293b;
+  border-color: #374151;
+  color: #64748b;
+}
+
 /* Footer */
 .footer {
   display: flex;
@@ -878,16 +908,16 @@ onMounted(() => {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .menu-section {
     justify-content: center;
   }
-  
+
   .footer {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .footer-info {
     justify-content: center;
   }

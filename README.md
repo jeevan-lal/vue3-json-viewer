@@ -17,13 +17,14 @@ A modern, sleek Vue 3 component for viewing, editing, and manipulating JSON data
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⌨️ **Keyboard Navigation**: Full keyboard support
 - ♿ **Accessibility**: Screen reader support with proper ARIA labels
+- 🎯 **Icon-Only Mode**: Option to hide button text labels for compact interface
 - 🚀 **Dual Build System**: Library build for npm + Demo build for preview
 
 ## 🚀 Installation
 
 This component is now available on npm as `@ctechhindi/vue3-json-viewer`
 
-[@ctechhindi/vue3-json-viewer](https://www.npmjs.com/package/@ctechhindi/vue3-json-viewer)  
+[@ctechhindi/vue3-json-viewer](https://www.npmjs.com/package/@ctechhindi/vue3-json-viewer)
 
 ```bash
 npm install @ctechhindi/vue3-json-viewer
@@ -53,8 +54,8 @@ yarn add @ctechhindi/vue3-json-viewer
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import JsonViewer from '@ctechhindi/vue3-json-viewer'
+import { ref } from "vue";
+import JsonViewer from "@ctechhindi/vue3-json-viewer";
 
 const jsonData = ref({
   name: "John Doe",
@@ -63,13 +64,13 @@ const jsonData = ref({
   hobbies: ["reading", "coding"],
   address: {
     street: "123 Main St",
-    city: "Anytown"
-  }
-})
+    city: "Anytown",
+  },
+});
 
 const handleDataUpdate = (newData: any) => {
-  console.log('Data updated:', newData)
-}
+  console.log("Data updated:", newData);
+};
 </script>
 ```
 
@@ -84,6 +85,7 @@ const handleDataUpdate = (newData: any) => {
     default-mode="tree"
     :show-line-numbers="true"
     :max-depth="3"
+    :hide-action-text="false"
     @update:data="handleDataUpdate"
     @node-click="handleNodeClick"
     @node-expand="handleNodeExpand"
@@ -95,68 +97,69 @@ const handleDataUpdate = (newData: any) => {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import JsonViewer from '@ctechhindi/vue3-json-viewer'
+import { ref } from "vue";
+import JsonViewer from "@ctechhindi/vue3-json-viewer";
 
 const complexData = ref({
   // Your complex JSON data
-})
+});
 
-const currentTheme = ref<'light' | 'dark'>('light')
+const currentTheme = ref<"light" | "dark">("light");
 
 // Event handlers
 const handleDataUpdate = (newData: any) => {
-  console.log('Data updated:', newData)
-}
+  console.log("Data updated:", newData);
+};
 
 const handleNodeClick = (node: any) => {
-  console.log('Node clicked:', node)
-}
+  console.log("Node clicked:", node);
+};
 
 const handleNodeExpand = (node: any) => {
-  console.log('Node expanded:', node)
-}
+  console.log("Node expanded:", node);
+};
 
 const handleNodeCollapse = (node: any) => {
-  console.log('Node collapsed:', node)
-}
+  console.log("Node collapsed:", node);
+};
 
 const handleEditStart = () => {
-  console.log('Edit mode started')
-}
+  console.log("Edit mode started");
+};
 
 const handleEditSave = (data: any) => {
-  console.log('Changes saved:', data)
-}
+  console.log("Changes saved:", data);
+};
 
 const handleEditCancel = () => {
-  console.log('Edit cancelled')
-}
+  console.log("Edit cancelled");
+};
 </script>
 ```
 
 ## 📋 Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `data` | `any` | `{}` | JSON data to display |
-| `editable` | `boolean` | `true` | Enable editing capabilities |
-| `theme` | `'light' \| 'dark'` | `'light'` | Theme preference |
-| `defaultMode` | `'tree' \| 'text'` | `'tree'` | Default view mode |
-| `showLineNumbers` | `boolean` | `false` | Show line numbers in text mode |
-| `maxDepth` | `number` | `3` | Maximum depth to expand by default |
+| Prop              | Type                | Default   | Description                          |
+| ----------------- | ------------------- | --------- | ------------------------------------ |
+| `data`            | `any`               | `{}`      | JSON data to display                 |
+| `editable`        | `boolean`           | `true`    | Enable editing capabilities          |
+| `theme`           | `'light' \| 'dark'` | `'light'` | Theme preference                     |
+| `defaultMode`     | `'tree' \| 'text'`  | `'tree'`  | Default view mode                    |
+| `showLineNumbers` | `boolean`           | `false`   | Show line numbers in text mode       |
+| `maxDepth`        | `number`            | `3`       | Maximum depth to expand by default   |
+| `hideActionText`  | `boolean`           | `false`   | Hide button text labels (icons only) |
 
 ## 🎭 Events
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `update:data` | `newData: any` | Data changed event |
-| `node-click` | `node: JsonNode` | Node clicked event |
-| `node-expand` | `node: JsonNode` | Node expanded event |
+| Event           | Payload          | Description          |
+| --------------- | ---------------- | -------------------- |
+| `update:data`   | `newData: any`   | Data changed event   |
+| `node-click`    | `node: JsonNode` | Node clicked event   |
+| `node-expand`   | `node: JsonNode` | Node expanded event  |
 | `node-collapse` | `node: JsonNode` | Node collapsed event |
-| `edit-start` | - | Edit mode started |
-| `edit-save` | `data: any` | Changes saved |
-| `edit-cancel` | - | Edit mode cancelled |
+| `edit-start`    | -                | Edit mode started    |
+| `edit-save`     | `data: any`      | Changes saved        |
+| `edit-cancel`   | -                | Edit mode cancelled  |
 
 ## 🏗️ Data Structure
 
@@ -164,7 +167,7 @@ const handleEditCancel = () => {
 interface JsonNode {
   key: string;
   value: any;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'null';
+  type: "string" | "number" | "boolean" | "object" | "array" | "null";
   path: string[];
   level: number;
   expanded?: boolean;
@@ -223,6 +226,7 @@ npm run preview
 ### Build Outputs
 
 - **`npm run build`** → Creates `dist/` folder with library files:
+
   - `json-viewer.umd.js` - UMD bundle
   - `json-viewer.mjs` - ES module bundle
   - `style.css` - Component styles
