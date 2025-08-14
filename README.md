@@ -38,6 +38,24 @@ yarn add @ctechhindi/vue3-json-viewer
 
 ## 📖 Usage
 
+### CSS Import (Required)
+
+**Important:** You need to import the CSS file to see the styles. Choose one of these options:
+
+```typescript
+// Option 1: Direct CSS import (recommended)
+import '@ctechhindi/vue3-json-viewer/dist/index.css'
+
+// Option 2: Using the styles export
+import '@ctechhindi/vue3-json-viewer/styles'
+
+// Option 3: Using the css export
+import '@ctechhindi/vue3-json-viewer/css'
+
+// Option 4: In your main.ts or main.js
+import '@ctechhindi/vue3-json-viewer/dist/index.css'
+```
+
 ### Basic Usage
 
 ```vue

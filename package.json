@@ -1,6 +1,6 @@
 {
   "name": "@ctechhindi/vue3-json-viewer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A modern, sleek Vue 3 JSON viewer component with tree and text modes",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -67,6 +67,9 @@
     "./JsonViewer": {
       "import": "./src/components/JsonViewer.vue",
       "types": "./src/components/JsonViewer.vue"
-    }
+    },
+    "./styles": "./dist/index.css",
+    "./dist/index.css": "./dist/index.css",
+    "./css": "./dist/index.css"
   }
 }
