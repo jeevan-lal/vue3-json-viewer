@@ -58,7 +58,23 @@
     </main>
 
     <footer class="app-footer">
-      <p>Vue 3 JSON Viewer Component - Built with Composition API and TypeScript</p>
+      <div class="footer-content">
+        <p>Vue 3 JSON Viewer Component - Built with Composition API and TypeScript</p>
+        <div class="footer-links">
+          <a href="https://github.com/jeevan-lal/vue3-json-viewer" target="_blank" rel="noopener noreferrer" class="github-link">
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub Repository
+          </a>
+          <a href="https://www.npmjs.com/package/@ctechhindi/vue3-json-viewer" target="_blank" rel="noopener noreferrer" class="npm-link">
+            <svg class="npm-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.007-4.211h-3.456v4.201H5.136V5.323z"/>
+            </svg>
+            NPM Package
+          </a>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -434,7 +450,7 @@ body.dark-theme .usage-example pre {
 /* Footer */
 .app-footer {
   background: #f1f5f9;
-  padding: 1rem;
+  padding: 1.5rem;
   text-align: center;
   border-top: 1px solid #e2e8f0;
   color: #64748b;
@@ -445,6 +461,84 @@ body.dark-theme .app-footer {
   background: #0f172a;
   border-color: #1e293b;
   color: #94a3b8;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.github-link,
+.npm-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.github-link {
+  color: #374151;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.github-link:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.npm-link {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.npm-link:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+}
+
+body.dark-theme .github-link {
+  color: #f9fafb;
+  background: #1e293b;
+  border-color: #374151;
+}
+
+body.dark-theme .github-link:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+body.dark-theme .npm-link {
+  color: #fca5a5;
+  background: #450a0a;
+  border-color: #7f1d1d;
+}
+
+body.dark-theme .npm-link:hover {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.github-icon,
+.npm-icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Responsive Design */

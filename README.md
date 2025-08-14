@@ -1,6 +1,8 @@
 # Vue 3 JSON Viewer
 
-A modern, sleek Vue 3 component for viewing, editing, and manipulating JSON data with two view modes: Tree Mode and Text Mode.
+A modern, sleek Vue 3 component for viewing, editing, and manipulating JSON data with two view modes: Tree Mode and Text Mode.]
+
+[Demo Page](https://vue3-json-viewer-seven.vercel.app/)
 
 ## ✨ Features
 
