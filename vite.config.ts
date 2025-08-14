@@ -16,9 +16,10 @@ export default defineConfig(({ command }) => {
       },
       build: {
         lib: {
-          entry: resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/components/JsonViewer.vue'),
-          name: 'JsonViewer',
-          fileName: 'json-viewer',
+          entry: resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/index.ts'),
+          name: 'Vue3JsonViewer',
+          fileName: 'index',
+          formats: ['es', 'cjs'],
         },
         rollupOptions: {
           external: ['vue'],
@@ -26,8 +27,14 @@ export default defineConfig(({ command }) => {
             globals: {
               vue: 'Vue',
             },
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name === 'style.css') return 'index.css';
+              return assetInfo.name;
+            },
+            exports: 'named',
           },
         },
+        cssCodeSplit: false,
       },
     }
   } else {

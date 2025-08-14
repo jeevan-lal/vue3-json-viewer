@@ -138,7 +138,7 @@ import {
 } from "./icons";
 
 // Types
-interface JsonNodeType {
+export interface JsonNodeType {
   key: string;
   value: any;
   type: "string" | "number" | "boolean" | "object" | "array" | "null";
@@ -148,7 +148,7 @@ interface JsonNodeType {
   children?: JsonNodeType[];
 }
 
-interface Props {
+export interface Props {
   data: any;
   editable?: boolean;
   theme?: "light" | "dark";

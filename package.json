@@ -1,15 +1,20 @@
 {
   "name": "@ctechhindi/vue3-json-viewer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A modern, sleek Vue 3 JSON viewer component with tree and text modes",
-  "main": "src/components/JsonViewer.vue",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build:lib": "rimraf dist && vue-tsc --project tsconfig.lib.json --declaration --emitDeclarationOnly --outDir dist && vite build && npm run copy-types",
+    "copy-types": "vue-tsc --project tsconfig.lib.json --declaration --emitDeclarationOnly --outDir dist",
     "build:demo": "vue-tsc && vite build --config vite.demo.config.ts",
     "preview": "vite preview",
     "lint": "eslint src --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "vue": "^3.3.4"
@@ -23,6 +28,7 @@
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.45.0",
     "eslint-plugin-vue": "^9.15.0",
+    "rimraf": "^6.0.1",
     "typescript": "~5.1.6",
     "vite": "^4.4.5",
     "vue-tsc": "^1.8.5"
@@ -46,5 +52,21 @@
   "bugs": {
     "url": "https://github.com/jeevan-lal/vue3-json-viewer/issues"
   },
-  "homepage": "https://github.com/jeevan-lal/vue3-json-viewer#readme"
+  "homepage": "https://github.com/jeevan-lal/vue3-json-viewer#readme",
+  "files": [
+    "dist",
+    "src/components/JsonViewer.vue",
+    "src/components/JsonNode.vue"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./JsonViewer": {
+      "import": "./src/components/JsonViewer.vue",
+      "types": "./src/components/JsonViewer.vue"
+    }
+  }
 }
