@@ -269,12 +269,9 @@ const loadSample = (type: keyof typeof sampleData) => {
 
 const toggleTheme = () => {
   // This only affects the JsonViewer component theme
-  // No global body class modifications
-  console.log("Toggle theme clicked - theme will only affect JsonViewer component");
 };
 
 const handleDataUpdate = (newData: any) => {
-  console.log("Data updated:", newData);
   jsonData.value = newData;
 };
 
@@ -292,7 +289,6 @@ const handleEditCancel = () => {
 
 const handleThemeChange = (theme: "light" | "dark") => {
   isDarkTheme.value = theme === "dark";
-  console.log("Theme changed to:", theme);
 };
 
 // Lifecycle
@@ -377,8 +373,6 @@ body {
   font-weight: 600;
 }
 
-
-
 .sample-buttons {
   display: flex;
   gap: 0.5rem;
@@ -403,8 +397,6 @@ body {
   border-color: #3b82f6;
 }
 
-
-
 .theme-controls {
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
@@ -412,8 +404,6 @@ body {
   gap: 1rem;
   flex-wrap: wrap;
 }
-
-
 
 .theme-controls label {
   display: flex;
@@ -423,21 +413,10 @@ body {
   font-size: 0.875rem;
 }
 
-.theme-note {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-  font-style: italic;
-}
-
 .props-controls {
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
   margin-top: 1rem;
-}
-
-body.dark-theme .props-controls {
-  border-color: #4b5563;
 }
 
 .props-controls h4 {
@@ -446,8 +425,6 @@ body.dark-theme .props-controls {
   font-weight: 600;
   font-size: 1rem;
 }
-
-
 
 .props-grid {
   display: grid;
@@ -470,8 +447,6 @@ body.dark-theme .props-controls {
   background-color: #f3f4f6;
 }
 
-
-
 .json-viewer-container {
   flex: 1;
   min-height: 600px;
@@ -487,16 +462,12 @@ body.dark-theme .props-controls {
   height: fit-content;
 }
 
-
-
 .info-panel h3,
 .info-panel h4 {
   color: #374151;
   font-weight: 600;
   margin-bottom: 1rem;
 }
-
-
 
 .feature-list {
   list-style: none;
@@ -509,14 +480,10 @@ body.dark-theme .props-controls {
   font-size: 0.875rem;
 }
 
-
-
 .usage-example {
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
 }
-
-
 
 .usage-example pre {
   background: #f8fafc;
@@ -528,8 +495,6 @@ body.dark-theme .props-controls {
   font-family: 'Fira Code', 'Monaco', monospace;
 }
 
-
-
 /* Footer */
 .app-footer {
   background: #f1f5f9;
@@ -539,8 +504,6 @@ body.dark-theme .props-controls {
   color: #64748b;
   font-size: 0.875rem;
 }
-
-
 
 .footer-content {
   display: flex;
@@ -591,8 +554,6 @@ body.dark-theme .props-controls {
   border-color: #fca5a5;
   transform: translateY(-1px);
 }
-
-
 
 .github-icon,
 .npm-icon {

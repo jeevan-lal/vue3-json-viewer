@@ -371,9 +371,7 @@ const validateJson = () => {
   }
 };
 
-const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): JsonNodeType[] => {
-  const nodes: JsonNodeType[] = [];
-
+const buildTreeNodes = (data: any, path: string[] = [], level: number = 0, preserveState?: JsonNodeType[]): JsonNodeType[] => {
   if (data === null) {
     return [{
       key: "",
@@ -384,40 +382,85 @@ const buildTreeNodes = (data: any, path: string[] = [], level: number = 0): Json
     }];
   }
 
+  // For root level objects and arrays, create a single container node
+  if (level === 0 && (Array.isArray(data) || (typeof data === "object" && data !== null))) {
+    const rootType = Array.isArray(data) ? "array" : "object";
+
+    // Try to preserve expanded state from existing root node
+    const existingRoot = preserveState && preserveState[0];
+    const shouldExpand = existingRoot ? existingRoot.expanded : true;
+
+    const rootNode: JsonNodeType = {
+      key: rootType === "array" ? "Array" : "Object",
+      value: data,
+      type: rootType,
+      path: [],
+      level: 0,
+      expanded: shouldExpand,
+      children: buildTreeNodesInternal(data, [], 1, existingRoot?.children)
+    };
+    return [rootNode];
+  }
+
+  return buildTreeNodesInternal(data, path, level, preserveState);
+};
+
+const buildTreeNodesInternal = (data: any, path: string[] = [], level: number = 0, preserveState?: JsonNodeType[]): JsonNodeType[] => {
+  const nodes: JsonNodeType[] = [];
+
+  // Helper function to find existing node by path
+  const findExistingNode = (existingNodes: JsonNodeType[] | undefined, targetPath: string[]): JsonNodeType | undefined => {
+    if (!existingNodes) return undefined;
+    return existingNodes.find(node =>
+      node.path.length === targetPath.length &&
+      node.path.every((segment, index) => segment === targetPath[index])
+    );
+  };
+
   if (Array.isArray(data)) {
     data.forEach((item, index) => {
       const itemPath = [...path, index.toString()];
       const itemType = getValueType(item);
+
+      // Try to find existing node to preserve expanded state
+      const existingNode = findExistingNode(preserveState, itemPath);
+      const shouldExpand = existingNode ? existingNode.expanded : level < props.maxDepth;
+
       const node: JsonNodeType = {
         key: index.toString(),
         value: item,
         type: itemType,
         path: itemPath,
         level,
-        expanded: level < props.maxDepth,
+        expanded: shouldExpand,
       };
 
       if (itemType === "object" || itemType === "array") {
-        node.children = buildTreeNodes(item, itemPath, level + 1);
+        node.children = buildTreeNodesInternal(item, itemPath, level + 1, existingNode?.children);
       }
 
       nodes.push(node);
     });
-  } else if (typeof data === "object") {
+  } else if (typeof data === "object" && data !== null) {
     Object.entries(data).forEach(([key, value]) => {
       const itemPath = [...path, key];
       const itemType = getValueType(value);
+
+      // Try to find existing node to preserve expanded state
+      const existingNode = findExistingNode(preserveState, itemPath);
+      const shouldExpand = existingNode ? existingNode.expanded : level < props.maxDepth;
+
       const node: JsonNodeType = {
         key,
         value,
         type: itemType,
         path: itemPath,
         level,
-        expanded: level < props.maxDepth,
+        expanded: shouldExpand,
       };
 
       if (itemType === "object" || itemType === "array") {
-        node.children = buildTreeNodes(value, itemPath, level + 1);
+        node.children = buildTreeNodesInternal(value, itemPath, level + 1, existingNode?.children);
       }
 
       nodes.push(node);
@@ -478,15 +521,31 @@ const handleKeyChange = (event: { node: JsonNodeType; oldKey: string; newKey: st
   const parentPath = event.node.path.slice(0, -1);
   const parent = getNestedValue(newData, parentPath);
 
-  if (parent && typeof parent === 'object') {
-    // Store the value
-    const value = parent[event.oldKey];
-    // Delete the old key
-    delete parent[event.oldKey];
-    // Add the new key with the same value
-    parent[event.newKey] = value;
-    // Update the path in the node
-    event.node.path[event.node.path.length - 1] = event.newKey;
+  if (parent && typeof parent === 'object' && !Array.isArray(parent)) {
+    // Get all keys in their current order
+    const keys = Object.keys(parent);
+    const values = keys.map(key => parent[key]);
+
+    // Find the index of the old key
+    const keyIndex = keys.indexOf(event.oldKey);
+
+    if (keyIndex !== -1) {
+      // Replace the old key with the new key at the same position
+      keys[keyIndex] = event.newKey;
+
+      // Clear the parent object
+      for (const key of Object.keys(parent)) {
+        delete parent[key];
+      }
+
+      // Rebuild the object with keys in the same order
+      keys.forEach((key, index) => {
+        parent[key] = values[index];
+      });
+
+      // Update the path in the node
+      event.node.path[event.node.path.length - 1] = event.newKey;
+    }
   }
   emit("update:data", newData);
 };
@@ -533,7 +592,8 @@ const getNestedValue = (obj: any, path: string[]) => {
 };
 
 watch(() => props.data, (newData) => {
-  rootNodes.value = buildTreeNodes(newData);
+  // Preserve current expanded state when rebuilding tree
+  rootNodes.value = buildTreeNodes(newData, [], 0, rootNodes.value);
   jsonText.value = JSON.stringify(newData, null, 2);
 }, { deep: true, immediate: true });
 
@@ -544,18 +604,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.json-viewer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  font-family: 'Inter', 'Roboto', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
 .json-viewer {
   /* Base styles */
   display: flex;
@@ -718,14 +766,6 @@ onMounted(() => {
 /* Theme Icon Styling */
 .theme-icon {
   transition: all 0.3s ease;
-}
-
-.theme-btn:hover .theme-icon {
-  transform: scale(1.1);
-}
-
-.theme-btn {
-  transition: all 0.2s ease;
 }
 
 /* Ensure SVG icons inherit the theme icon styling */
@@ -1025,11 +1065,6 @@ onMounted(() => {
   .mode-btn span {
     display: none;
   }
-}
-
-/* Hide hidden sections completely */
-.menu-bar.hidden {
-  display: none !important;
 }
 
 @media (max-width: 768px) {

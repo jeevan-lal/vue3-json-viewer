@@ -353,7 +353,7 @@ const saveValue = () => {
 
     emit("value-change", { node: props.node, value: newValue });
   } catch (error) {
-    alert("Invalid value format");
+    console.error(error);
     return;
   }
 
@@ -424,7 +424,7 @@ const addNewItem = () => {
     emit("node-add", { parent: props.node, key, value });
     cancelAdd();
   } catch (error) {
-    alert("Invalid value format");
+    console.error(error);
   }
 };
 
